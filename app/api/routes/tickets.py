@@ -10,6 +10,9 @@ router = APIRouter()
 
 @router.post("/", status_code=201, response_model=TicketResponse)
 def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
+    """
+    Create a new ticket.
+    """
     ticket_crud = TicketCRUD(db)
     logger.info("Creating ticket with title: {}", ticket.title)
     if ticket.kanban_status_id is None:
@@ -18,12 +21,18 @@ def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
 
 @router.get("/", status_code=200, response_model=list[TicketResponse])
 def get_all_tickets(db: Session = Depends(get_db), skip: int = 0, limit: int = 10):
+    """
+    Retrieve all tickets with pagination.
+    """
     ticket_crud = TicketCRUD(db)
     logger.info("Fetching all tickets with skip: {} and limit: {}", skip, limit)
     return ticket_crud.get_all(skip=skip, limit=limit)
 
 @router.get("/{id}", status_code=200, response_model=TicketResponse)
 def get_ticket(id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve a ticket by its ID.
+    """
     ticket_crud = TicketCRUD(db)
     ticket = ticket_crud.get(id)
     if not ticket:
@@ -34,6 +43,9 @@ def get_ticket(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", status_code=200, response_model=TicketResponse)
 def update_ticket(id: int, ticket: TicketCreate, db: Session = Depends(get_db)):
+    """
+    Update an existing ticket.
+    """
     ticket_crud = TicketCRUD(db)
     logger.info("Updating ticket with id: {}", id)
     ticket_crud.update(id, **ticket.dict())
@@ -41,6 +53,9 @@ def update_ticket(id: int, ticket: TicketCreate, db: Session = Depends(get_db)):
 
 @router.delete("/{id}", status_code=204)
 async def delete_ticket(id: int, db: Session = Depends(get_db)):
+    """
+    Delete a ticket by its ID.
+    """
     ticket_crud = TicketCRUD(db)
     logger.info("Deleting ticket with id: {}", id)
     ticket_crud.delete(id)
