@@ -2,6 +2,9 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class TicketCreate(BaseModel):
+    """
+    Schema for creating a new ticket.
+    """
     project_id: int
     title: str
     description: str
@@ -10,6 +13,9 @@ class TicketCreate(BaseModel):
     kanban_status_id: int  # Ensure this field is required
 
 class Ticket(BaseModel):
+    """
+    Schema for representing a ticket.
+    """
     id: int
     project_id: int
     title: str
@@ -24,4 +30,7 @@ class Ticket(BaseModel):
         orm_mode: True
 
 class TicketResponse(Ticket):
+    """
+    Schema for the response of a ticket.
+    """
     pass

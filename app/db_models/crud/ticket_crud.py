@@ -9,6 +9,13 @@ class TicketCRUD(BaseCRUD):
         super().__init__(db, Ticket)
 
     def get_all(self, skip: int = 0, limit: int = 10) -> List[Ticket]:
+        """
+        Retrieve all tickets with optional pagination.
+
+        :param skip: Number of records to skip (default is 0).
+        :param limit: Maximum number of records to return (default is 10).
+        :return: List of Ticket objects.
+        """
         result = self.db.execute(
             select(Ticket).offset(skip).limit(limit)
         )

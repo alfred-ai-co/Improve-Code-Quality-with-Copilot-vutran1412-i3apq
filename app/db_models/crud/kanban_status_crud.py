@@ -19,11 +19,8 @@ class KanbanStatusCRUD(BaseCRUD):
         )
         return result.scalars().one_or_none()
 
-    def create(self, kanban_status: KanbanStatus):
-        self.db.add(kanban_status)
-        self.db.commit()
-        self.db.refresh(kanban_status)
-        return kanban_status
+    def create(self, **kwargs):
+        return super().create(**kwargs)
 
     def update(self, id: int, **kwargs):
         db_kanban_status = self.get(id)
