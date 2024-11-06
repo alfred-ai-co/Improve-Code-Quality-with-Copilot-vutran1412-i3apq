@@ -1,10 +1,5 @@
 from sqlalchemy.orm import Session
-from app.db_models.crud.base_crud import BaseCRUD, CRUDInterface
-from app.db_models.crud.project_crud import ProjectCRUD
-from app.db_models.crud.ticket_crud import TicketCRUD
-from app.db_models.crud.kanban_board_crud import KanbanBoardCRUD
-from app.db_models.crud.kanban_status_crud import KanbanStatusCRUD
-
+from abc import ABC, abstractmethod
 
 class CRUDInterface(ABC):
     @abstractmethod
@@ -59,28 +54,3 @@ class BaseCRUD(CRUDInterface):
         item = self.get(id)
         self.db.delete(item)
         self.db.commit()
-
-
-class ProjectCRUD(BaseCRUD):
-    def __init__(self, db: Session):
-        super().__init__(db, Project)
-
-    def create(self, **kwargs):
-        if 'kanban_board_id' not in kwargs or kwargs['kanban_board_id'] is None:
-            raise ValueError("kanban_board_id cannot be None")
-        return super().create(**kwargs)
-
-
-class TicketCRUD(BaseCRUD):
-    def __init__(self, db: Session):
-        super().__init__(db, Ticket)
-
-
-class KanbanBoardCRUD(BaseCRUD):
-    def __init__(self, db: Session):
-        super().__init__(db, KanbanBoard)
-
-
-class KanbanStatusCRUD(BaseCRUD):
-    def __init__(self, db: Session):
-        super().__init__(db, KanbanStatus)

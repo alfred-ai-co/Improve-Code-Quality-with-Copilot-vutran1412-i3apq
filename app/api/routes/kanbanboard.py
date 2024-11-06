@@ -43,4 +43,3 @@ def delete_kanban_board(id: int, db: Session = Depends(get_db)):
     kanban_board_crud = KanbanBoardCRUD(db)
     kanban_board_crud.delete(id)
     return {"message": "Kanban Board deleted successfully"}
-

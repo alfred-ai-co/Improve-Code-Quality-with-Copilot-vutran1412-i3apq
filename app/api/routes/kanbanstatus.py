@@ -43,4 +43,3 @@ def delete_kanban_status(id: int, db: Session = Depends(get_db)):
     kanban_status_crud = KanbanStatusCRUD(db)
     kanban_status_crud.delete(id)
     return {"message": "Kanban Status deleted successfully"}
-

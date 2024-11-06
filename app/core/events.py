@@ -25,13 +25,15 @@ def create_default_board(db: Session) -> None:
     db.refresh(board)
 
 def create_kanban_defaults(db: Session, create_defaults: Optional[str] = True) -> None:
-    if create_defaults.lower() == 'true':
+    if create_defaults and create_defaults.lower() == 'true':
         logger.info("Creating default Kanban Board and Statuses")
         logger.info("To set off, add env variable CREATE_DEFAULTS=False")
         create_default_board(db)
         create_default_statuses(db)
-    elif create_defaults.lower() == 'false': logger.info("Create defaults is set to False, not creating default Kanban Board and Statuses")
-    else: logger.info("No CREATE_DEFAULTS env variable set, not creating default Kanban Board and Statuses")
+    elif create_defaults and create_defaults.lower() == 'false':
+        logger.info("Create defaults is set to False, not creating default Kanban Board and Statuses")
+    else:
+        logger.info("No CREATE_DEFAULTS env variable set, not creating default Kanban Board and Statuses")
 
 
 def create_start_app_handler(app: FastAPI) -> Callable:
@@ -40,19 +42,19 @@ def create_start_app_handler(app: FastAPI) -> Callable:
         logger.info(f"Starting [{settings.app_env.value}] Application")
         # Start up Events
         load_dotenv(find_dotenv())
-        
+
         # Create tables
         Base.metadata.create_all(bind=engine)
-        
+
         # Create a new session
         session = SessionLocal()
-        
+
         # Create default Kanban Board and Statuses
         create_kanban_defaults(session, os.getenv('CREATE_DEFAULTS'))
-        
+
         # Close session
         session.close()
-        
+
     return start_app
 
 def create_stop_app_handler(app: FastAPI) -> Callable:
