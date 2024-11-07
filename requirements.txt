@@ -3,3 +3,9 @@ uvicorn[standard]
 sqlalchemy
 pydantic-settings
 loguru
+pytest
+anyio
+pytest-asyncio
+pytest-tornasync
+pytest-trio
+pytest-twisted

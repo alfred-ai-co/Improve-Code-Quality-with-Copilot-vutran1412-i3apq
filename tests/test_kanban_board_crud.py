@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.orm import Session
 from app.db_models.crud.kanban_board_crud import KanbanBoardCRUD
 from app.db_models.base import KanbanBoard
+import datetime
 
 def test_create_kanban_board(db_session: Session):
     kanban_board_crud = KanbanBoardCRUD(db_session)
@@ -30,3 +31,6 @@ def test_delete_kanban_board(db_session: Session):
     kanban_board = kanban_board_crud.create(**kanban_board_data)
     kanban_board_crud.delete(kanban_board.id)
     assert kanban_board_crud.get(kanban_board.id) is None
+
+# Replace datetime.datetime.utcnow() with datetime.datetime.now(datetime.timezone.utc)
+timestamp = datetime.datetime.now(datetime.timezone.utc)

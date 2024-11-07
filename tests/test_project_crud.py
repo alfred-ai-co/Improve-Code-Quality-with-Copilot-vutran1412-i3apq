@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.orm import Session
 from app.db_models.crud.project_crud import ProjectCRUD
 from app.db_models.base import Project
+import datetime
 
 def test_create_project(db_session: Session):
     project_crud = ProjectCRUD(db_session)
@@ -30,3 +31,6 @@ def test_delete_project(db_session: Session):
     project = project_crud.create(**project_data)
     project_crud.delete(project.id)
     assert project_crud.get(project.id) is None
+
+# Replace datetime.datetime.utcnow() with datetime.datetime.now(datetime.timezone.utc)
+timestamp = datetime.datetime.now(datetime.timezone.utc)
