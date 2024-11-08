@@ -11,6 +11,11 @@ router = APIRouter()
 
 @router.post("/", status_code=201, response_model=ProjectResponse)
 def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
+    """
+    Create a new project.
+    - **project**: ProjectCreate - The project data to create.
+    - **db**: Session - The database session dependency.
+    """
     project_crud = ProjectCRUD(db)
     logger.info("Creating project with name: {}", project.name)
     if project.kanban_board_id is None:
@@ -23,6 +28,10 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
 
 @router.get("/", status_code=200, response_model=list[ProjectResponse])
 def get_all_projects(db: Session = Depends(get_db)):
+    """
+    Get all projects.
+    - **db**: Session - The database session dependency.
+    """
     project_crud = ProjectCRUD(db)
     logger.info("Fetching all projects")
     try:
@@ -33,6 +42,11 @@ def get_all_projects(db: Session = Depends(get_db)):
 
 @router.get("/{id}", status_code=200, response_model=ProjectResponse)
 def get_project(id: int, db: Session = Depends(get_db)):
+    """
+    Get a project by ID.
+    - **id**: int - The ID of the project to retrieve.
+    - **db**: Session - The database session dependency.
+    """
     project_crud = ProjectCRUD(db)
     try:
         project = project_crud.get(id)
@@ -47,6 +61,12 @@ def get_project(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", status_code=200, response_model=ProjectResponse)
 def update_project(id: int, project: ProjectCreate, db: Session = Depends(get_db)):
+    """
+    Update a project by ID.
+    - **id**: int - The ID of the project to update.
+    - **project**: ProjectCreate - The project data to update.
+    - **db**: Session - The database session dependency.
+    """
     project_crud = ProjectCRUD(db)
     logger.info("Updating project with id: {}", id)
     try:
@@ -58,6 +78,11 @@ def update_project(id: int, project: ProjectCreate, db: Session = Depends(get_db
 
 @router.delete("/{id}", status_code=204)
 def delete_project(id: int, db: Session = Depends(get_db)):
+    """
+    Delete a project by ID.
+    - **id**: int - The ID of the project to delete.
+    - **db**: Session - The database session dependency.
+    """
     project_crud = ProjectCRUD(db)
     logger.info("Deleting project with id: {}", id)
     try:
