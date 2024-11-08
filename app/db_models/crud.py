@@ -1,37 +1,9 @@
 from sqlalchemy.orm import Session
-from app.db_models.crud.base_crud import BaseCRUD, CRUDInterface
-from app.db_models.crud.project_crud import ProjectCRUD
-from app.db_models.crud.ticket_crud import TicketCRUD
-from app.db_models.crud.kanban_board_crud import KanbanBoardCRUD
-from app.db_models.crud.kanban_status_crud import KanbanStatusCRUD
+from sqlalchemy.exc import SQLAlchemyError
+from app.db_models.base import Project, Ticket, KanbanBoard, KanbanStatus
 
 
-class CRUDInterface(ABC):
-    """
-    Interface for CRUD operations.
-    """
-    @abstractmethod
-    def create(self, **kwargs):
-        pass
-
-    @abstractmethod
-    def get(self, id: int):
-        pass
-
-    @abstractmethod
-    def get_all(self):
-        pass
-
-    @abstractmethod
-    def update(self, id: int, **kwargs):
-        pass
-
-    @abstractmethod
-    def delete(self, id: int):
-        pass
-
-
-class BaseCRUD(CRUDInterface):
+class BaseCRUD:
     """
     Base CRUD class for all models.
     """
@@ -42,43 +14,82 @@ class BaseCRUD(CRUDInterface):
     def create(self, **kwargs):
         """
         Create a new record.
+
+        :param kwargs: The attributes of the record to create.
+        :return: The created record.
+        :raises SQLAlchemyError: If there is an error during the creation process.
         """
-        item = self.model(**kwargs)
-        self.db.add(item)
-        self.db.commit()
-        self.db.refresh(item)
-        return item
+        try:
+            item = self.model(**kwargs)
+            self.db.add(item)
+            self.db.commit()
+            self.db.refresh(item)
+            return item
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
 
     def get(self, id: int):
         """
         Retrieve a record by its ID.
+
+        :param id: The ID of the record to retrieve.
+        :return: The retrieved record or None if not found.
+        :raises SQLAlchemyError: If there is an error during the retrieval process.
         """
-        return self.db.query(self.model).filter(self.model.id == id).first()
+        try:
+            return self.db.query(self.model).filter(self.model.id == id).one_or_none()
+        except SQLAlchemyError as e:
+            raise e
 
     def get_all(self):
         """
         Retrieve all records.
+
+        :return: A list of all records.
+        :raises SQLAlchemyError: If there is an error during the retrieval process.
         """
-        return self.db.query(self.model).all()
+        try:
+            return self.db.query(self.model).all()
+        except SQLAlchemyError as e:
+            raise e
 
     def update(self, id: int, **kwargs):
         """
         Update an existing record.
+
+        :param id: The ID of the record to update.
+        :param kwargs: The attributes to update.
+        :return: The updated record.
+        :raises SQLAlchemyError: If there is an error during the update process.
         """
-        item = self.get(id)
-        for key, value in kwargs.items():
-            setattr(item, key, value)
-        self.db.commit()
-        self.db.refresh(item)
-        return item
+        try:
+            item = self.get(id)
+            for key, value in kwargs.items():
+                setattr(item, key, value)
+            self.db.commit()
+            self.db.refresh(item)
+            return item
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
 
     def delete(self, id: int):
         """
         Delete a record by its ID.
+
+        :param id: The ID of the record to delete.
+        :return: The deleted record.
+        :raises SQLAlchemyError: If there is an error during the deletion process.
         """
-        item = self.get(id)
-        self.db.delete(item)
-        self.db.commit()
+        try:
+            item = self.get(id)
+            self.db.delete(item)
+            self.db.commit()
+            return item
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
 
 
 class ProjectCRUD(BaseCRUD):
@@ -91,6 +102,11 @@ class ProjectCRUD(BaseCRUD):
     def create(self, **kwargs):
         """
         Create a new project.
+
+        :param kwargs: The attributes of the project to create.
+        :return: The created project.
+        :raises ValueError: If 'kanban_board_id' is not provided or is None.
+        :raises SQLAlchemyError: If there is an error during the creation process.
         """
         if 'kanban_board_id' not in kwargs or kwargs['kanban_board_id'] is None:
             raise ValueError("kanban_board_id cannot be None")
