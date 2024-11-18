@@ -109,3 +109,30 @@ def test_delete_history_entry(history_crud: HistoryCRUD, db_session: Session):
     logger.info(f"Deleted history entry ID: {history_entry.id}")
     assert history_crud.get(history_entry.id) is None
     logger.info("Finished test_delete_history_entry")
+
+def test_create_history_entry_invalid_data(history_crud: HistoryCRUD, db_session: Session):
+    logger.info("Starting test_create_history_entry_invalid_data")
+    with pytest.raises(ValueError):
+        history_crud.create(
+            entity_type="project",
+            entity_id=None,  # Invalid entity_id
+            change_type="status_change",
+            user_id=123,
+            details="Status changed to 'In Progress'"
+        )
+    logger.info("Finished test_create_history_entry_invalid_data")
+
+def test_update_nonexistent_history_entry(history_crud: HistoryCRUD, db_session: Session):
+    logger.info("Starting test_update_nonexistent_history_entry")
+    with pytest.raises(ValueError):
+        history_crud.update(
+            id=9999,  # Nonexistent ID
+            details="Status changed to 'Completed'"
+        )
+    logger.info("Finished test_update_nonexistent_history_entry")
+
+def test_delete_nonexistent_history_entry(history_crud: HistoryCRUD, db_session: Session):
+    logger.info("Starting test_delete_nonexistent_history_entry")
+    with pytest.raises(ValueError):
+        history_crud.delete(id=9999)  # Nonexistent ID
+    logger.info("Finished test_delete_nonexistent_history_entry")

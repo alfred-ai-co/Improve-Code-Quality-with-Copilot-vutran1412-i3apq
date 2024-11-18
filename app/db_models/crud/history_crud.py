@@ -34,6 +34,8 @@ class HistoryCRUD:
         """
         Create a new history entry.
         """
+        if kwargs.get('entity_id') is None:
+            raise ValueError("entity_id cannot be None")
         with self.session_scope():
             item = History(**kwargs)
             self.db.add(item)
@@ -67,18 +69,22 @@ class HistoryCRUD:
         """
         with self.session_scope():
             item = self.get(id)
+            if item is None:
+                raise ValueError(f"History entry with id {id} does not exist")
             for key, value in kwargs.items():
                 setattr(item, key, value)
             self.db.flush()  # Ensure the item is flushed to the session
             self.db.refresh(item)
             return item
 
-    def delete(self, id: int) -> History:
+    def delete(self, id: int) -> Optional[History]:
         """
         Delete a history entry by its ID.
         """
         with self.session_scope():
             item = self.get(id)
+            if item is None:
+                raise ValueError(f"History entry with id {id} does not exist")
             self.db.delete(item)
             self.db.flush()  # Ensure the item is flushed to the session
             return item

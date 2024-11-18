@@ -8,12 +8,12 @@ from app.api.dependencies import get_db
 router = APIRouter()
 
 @router.post("/", response_model=HistoryResponse, status_code=201)
-def create_history_entry(history: HistoryCreate, db: Session = Depends(get_db)) -> HistoryResponse:
+def create_history_entry(history: HistoryCreate, user_id: int = 1, db: Session = Depends(get_db)) -> HistoryResponse:
     """
     Create a new history entry.
     """
     history_crud = HistoryCRUD(db)
-    return history_crud.create(**history.model_dump())
+    return history_crud.create(**history.model_dump(), user_id=user_id)
 
 @router.get("/{entity_type}/{entity_id}", response_model=List[HistoryResponse])
 def get_history_by_entity(entity_type: str, entity_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)) -> List[HistoryResponse]:

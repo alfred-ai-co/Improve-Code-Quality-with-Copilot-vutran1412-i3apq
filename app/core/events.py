@@ -8,7 +8,7 @@ import os
 from app.db_models.base import *
 from app.db_models.session import engine, SessionLocal
 
-def create_default_statuses(db: Session) -> None:
+def create_default_statuses(db: Session, user_id: int = 1) -> None:
     statuses = [
         KanbanStatus(name="Backlog", description="Backlog Status", board_id=1),
         KanbanStatus(name="To Do", description="To Do Status", board_id=1),
@@ -24,7 +24,7 @@ def create_default_statuses(db: Session) -> None:
             entity_type="kanban_status",
             entity_id=status.id,
             change_type="create",
-            user_id=1,  # Assuming user ID 1 is the admin or system user
+            user_id=user_id,  # Dynamic user ID
             details=f"Default Kanban Status '{status.name}' created"
         )
         db.add(history_entry)
